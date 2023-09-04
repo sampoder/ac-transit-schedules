@@ -102,7 +102,7 @@ func main() {
 		fmt.Print(renderStr)
 	}
 	
-	for _, stop := range os.Args[1:] {
+	for index, stop := range os.Args[1:] {
 		
 		if(stop == "--no-title"){
 			return
@@ -110,7 +110,7 @@ func main() {
 		
 		client := &http.Client{}
 	
-		predictionsApiUrl := "https://api.actransit.org/transit/actrealtime/prediction?stpid="+ stop +"&token=TOKEN"
+		predictionsApiUrl := "https://api.actransit.org/transit/actrealtime/prediction?stpid="+ stop +"&token=REDACTED"
 		
 		predictionsRequest, _ := http.NewRequest("GET", predictionsApiUrl, nil)
 		
@@ -122,7 +122,7 @@ func main() {
 		
 		defer predictionsResponse.Body.Close()
 		
-		stopApiUrl := "https://api.actransit.org/transit/stop/"+ stop +"/profile?token=TOKEN"
+		stopApiUrl := "https://api.actransit.org/transit/stop/"+ stop +"/profile?token=REDACTED"
 		
 		stopRequest, _ := http.NewRequest("GET", stopApiUrl, nil)
 		
@@ -165,8 +165,12 @@ func main() {
 		
 		placeOrStreet := stopInformation.PlaceDescription
 		if placeOrStreet == "" { placeOrStreet = stopInformation.Street }
+
+		if(slices.Contains(os.Args[1:], "--no-title") && index != 0){
+			fmt.Println("\n \n")
+		}
 		
-		fmt.Println("\n \n", "🚏", placeOrStreet, "\n")
+		fmt.Println("🚏", placeOrStreet, "\n")
 		
 		table := tablewriter.NewWriter(os.Stdout)
 		table.SetHeader([]string{"Route"})
